@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EF6Auditing.UnitTests", "EF
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3A0CEF17-E56C-4398-9DF4-00A204DC576F}"
 	ProjectSection(SolutionItems) = preProject
-		EF6Auditing.1.0.0.nuspec = EF6Auditing.1.0.0.nuspec
+		EF6Auditing.nuspec = EF6Auditing.nuspec
 	EndProjectSection
 EndProject
 Global
