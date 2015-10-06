@@ -60,10 +60,6 @@
   </Choose>
   <ItemGroup>
     <Compile Include="BasicTest.cs" />
-    <Compile Include="Migrations\201510061455385_initialcreate.cs" />
-    <Compile Include="Migrations\201510061455385_initialcreate.Designer.cs">
-      <DependentUpon>201510061455385_initialcreate.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="MyCustomer.cs" />
     <Compile Include="MyDbContext.cs" />
@@ -78,11 +74,6 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201510061455385_initialcreate.resx">
-      <DependentUpon>201510061455385_initialcreate.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

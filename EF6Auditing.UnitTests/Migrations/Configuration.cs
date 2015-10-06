@@ -9,7 +9,7 @@ namespace EF6Auditing.UnitTests.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
         }
 
         protected override void Seed(EF6Auditing.UnitTests.MyDbContext context)
