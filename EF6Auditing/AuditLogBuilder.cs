@@ -19,48 +19,48 @@ namespace EF6Auditing
         internal static List<AuditLog> GetAuditLogsForExistingEntities(string userName,
             IEnumerable<DbEntityEntry> modifiedEntityEntries,
             IEnumerable<DbEntityEntry> deletedEntityEntries, 
-            ObjectContext objectContext)
+            ObjectContext objectContext,
+            DateTime auditDateTime)
         {
             var auditLogs = new List<AuditLog>();
             foreach (
                 var auditRecordsForEntityEntry in
                     modifiedEntityEntries.Select(
-                        changedEntity => GetAuditLogs(changedEntity, userName, EntityState.Modified, objectContext)))
+                        changedEntity => GetAuditLogs(changedEntity, userName, EntityState.Modified, objectContext, auditDateTime)))
                 auditLogs.AddRange(auditRecordsForEntityEntry);
             foreach (
                 var auditRecordsForEntityEntry in
                     deletedEntityEntries.Select(
-                        changedEntity => GetAuditLogs(changedEntity, userName, EntityState.Deleted, objectContext)))
+                        changedEntity => GetAuditLogs(changedEntity, userName, EntityState.Deleted, objectContext, auditDateTime)))
                 auditLogs.AddRange(auditRecordsForEntityEntry);
             return auditLogs;
         }
 
         internal static List<AuditLog> GetAuditLogsForAddedEntities(string userName,
             IEnumerable<DbEntityEntry> addedEntityEntries,
-            ObjectContext objectContext)
+            ObjectContext objectContext,
+            DateTime auditDateTime)
         {
             var auditLogs = new List<AuditLog>();
             foreach (
                 var auditRecordsForEntityEntry in
                     addedEntityEntries.Select(
-                        changedEntity => GetAuditLogs(changedEntity, userName, EntityState.Added, objectContext)))
+                        changedEntity => GetAuditLogs(changedEntity, userName, EntityState.Added, objectContext, auditDateTime)))
                 auditLogs.AddRange(auditRecordsForEntityEntry);
             return auditLogs;
         }
 
-        private static IEnumerable<AuditLog> GetAuditLogs(DbEntityEntry entityEntry, string userName, EntityState entityState, ObjectContext objectContext)
+        private static IEnumerable<AuditLog> GetAuditLogs(DbEntityEntry entityEntry, string userName, EntityState entityState, ObjectContext objectContext,
+            DateTime auditDateTime)
         {
             var returnValue = new List<AuditLog>();
             var keyRepresentation = BuildKeyRepresentation(entityEntry, KeySeperator, objectContext);
 
-            var auditedPropertyNames =
-                entityEntry.Entity.GetType()
-                    .GetProperties().Where(p => !p.GetCustomAttributes(typeof(DoNotAudit), true).Any())
-                    .Select(info => info.Name);
+            var auditedPropertyNames = GetDeclaredPropertyNames(entityEntry.Entity.GetType(), objectContext.MetadataWorkspace);
             foreach (var propertyName in auditedPropertyNames)
             {
                 var currentValue = Convert.ToString(entityEntry.CurrentValues.GetValue<object>(propertyName));
-                var originalValue = Convert.ToString(entityEntry.OriginalValues.GetValue<object>(propertyName));
+                var originalValue = Convert.ToString(entityEntry.GetDatabaseValues().GetValue<object>(propertyName));
                 if (entityState == EntityState.Modified)
                     if (originalValue == currentValue) //Values are the same, don't log
                         continue;
@@ -75,7 +75,7 @@ namespace EF6Auditing
                         ? currentValue
                         : null,
                     ColumnName = propertyName,
-                    EventDateTime = DateTime.Now,
+                    EventDateTime = auditDateTime,
                     EventType = entityState.ToString(),
                     UserName = userName,
                     TableName = entityEntry.Entity.GetType().Name
@@ -116,6 +116,13 @@ namespace EF6Auditing
             }
 
             return null;
+        }
+
+        private static IEnumerable<string> GetDeclaredPropertyNames(Type type, MetadataWorkspace workspace)
+        {
+            EdmType edmType;
+
+            return workspace.TryGetType(type.Name, type.Namespace, DataSpace.OSpace, out edmType) ? ((System.Data.Entity.Core.Metadata.Edm.EntityType) edmType).DeclaredProperties.Select(x => x.Name) : null;
         }
     }
 }

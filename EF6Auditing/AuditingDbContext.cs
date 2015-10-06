@@ -66,16 +66,18 @@ namespace EF6Auditing
         /// </returns>
         public virtual int SaveChanges(string userName)
         {
+            var auditDateTime = DateTime.Now;
             var addedEntityEntries = ChangeTracker.Entries().Where(p => p.State == EntityState.Added).ToList();
             var modifiedEntityEntries = ChangeTracker.Entries().Where(p => p.State == EntityState.Modified).ToList();
             var deletedEntityEntries = ChangeTracker.Entries().Where(p => p.State == EntityState.Deleted).ToList();
 
             var auditLogs = AuditLogBuilder.GetAuditLogsForExistingEntities(userName, modifiedEntityEntries,
-                deletedEntityEntries, ((IObjectContextAdapter)this).ObjectContext);
+                deletedEntityEntries, ((IObjectContextAdapter)this).ObjectContext, auditDateTime);
 
             var result = base.SaveChanges();
 
-            auditLogs.AddRange(AuditLogBuilder.GetAuditLogsForAddedEntities(userName, addedEntityEntries, ((IObjectContextAdapter)this).ObjectContext));
+            auditLogs.AddRange(AuditLogBuilder.GetAuditLogsForAddedEntities(userName, addedEntityEntries,
+                ((IObjectContextAdapter) this).ObjectContext, auditDateTime));
             //auditLogs.
 
             Set<AuditLog>().AddRange(auditLogs);
