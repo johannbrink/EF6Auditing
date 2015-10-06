@@ -7,6 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EF6Auditing", "EF6Auditing\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EF6Auditing.UnitTests", "EF6Auditing.UnitTests\EF6Auditing.UnitTests.csproj", "{E7EA8DB9-E574-4F34-AEF2-0B0201F475C3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3A0CEF17-E56C-4398-9DF4-00A204DC576F}"
+	ProjectSection(SolutionItems) = preProject
+		EF6Auditing.1.0.0.nuspec = EF6Auditing.1.0.0.nuspec
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
